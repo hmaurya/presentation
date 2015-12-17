@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>Using Algorithms</title>
+
+        <meta name="description" content="A presentation on std::algorithms">
+        <meta name="author" content="Himanshu Maurya">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+        <!-- Code syntax highlighting -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement( 'link' );
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+
+        <!--[if lt IE 9]>
+        <script src="lib/js/html5shiv.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+
+        <div class="reveal">
+
+            <!-- Any section element inside of this container is displayed as a slide -->
+            <div class="slides">
+                <section>
+                    <h1>Using Algorithms</h1>
+                    <!-- <h3>The HTML Presentation Framework</h3> -->
+                    <p>
+                        <small>Himanshu Maurya</a> / November 20, 2015</a></small>
+                    </p>
+                </section>
+                <section>
+                    <h2>Audience</h2>
+                    <ul>
+                        <li>C++ programmers</li>
+                        <li>Python programmers</li>
+                        <li>Clean code enthusiasts</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Objective</h2>
+                    <ul>
+                        <li>Better code</li>
+                        <li>Avoid raw loops</li>
+                        <li>Use standards</li>
+                        <li>DRY</li>
+                    </ul>
+                </section>
+
+                 <section>
+                    <h4>Avoid raw loops</h4>
+                    <p> Why? not because loop is hard to write 
+                    <br> or you cant write terse loop in c++</p>
+
+                    <pre><code class="c++" >
+std::vector&lt;int&gt; v{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; //this line will not work before c++11
+//before c++11
+std::vector&lt;int&gt;::iterator it(v.begin());
+for (; it != v.end(); ++it ) {
+    //do 
+    std::cout &lt;&lt;"val:" &lt;&lt; *it &lt;&lt;std::endl;    
+    //logic
+}
+                    </code></pre>
+                    <pre><code class="c++" >
+//c++11 onwards
+std::vector&lt;int&gt; v{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+for (auto it : v) {
+    //do
+    std::cout &lt;&lt; "val: " &lt;&lt; it &lt;&lt;std::endl;
+    //logic
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <section id="fragments">
+                        <h3>why no raw loops?</h3>
+                        <p class="fragment">...difficult to reason about and prove the post conditions</p>
+                        <p class="fragment">...error prone</p>
+                        <p class="fragment">...complicates reasoning about surrounding code</p>
+                        <p class="fragment">...can also cause non-obvious performance problem</p>
+                    </section>
+                </section>
+
+                <!-- introduction to lambda (tiny) -->
+                 <section>
+                    <h2>Tiny introduction to lambda</h2>
+                    <p>
+                        very tiny infact.. but it will serve the purpose..
+                        <br> basically lambdas are a way to create function objects without the extra boiler plate code
+                    </p>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Functions</h3>
+                        <p>This is how we declare regular functions body</p>
+                         <pre><code class="c++" data-trim contenteditable>
+                            return_type func(params type) { body }
+                         </code></pre>
+                        <br>
+                        <!--<a href="#" class="navigate-down">
+                            <img width="89" height="119" data-src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Down arrow">
+                        </a>-->
+                    </section>
+                    <section>
+                        <p>in c++</p>
+                        <pre><code class="c++" data-trim contenteditable>
+                        int increment(int aNum) { return aNum+1; }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <p>remove the function name because its lambda</p>
+                        <pre><code class="c++" data-trim contenteditable>
+                        int anonymous(int aNum) { return aNum+1; }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <p>remove the return type because compiler can deduce it</p>
+                        <pre><code class="c++" data-trim contenteditable>
+                        anonymous(int aNum) { return aNum+1; }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <p>remove the name</p>
+                        <pre><code class="c++" data-trim contenteditable>
+                        [ capture_list ](int aNum) { return aNum+1; }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <p>[caputure_list] is a way to create closures</p>
+                        <pre><code class="c++" data-trim contenteditable>
+{
+    int a = 1, b = 1, c = 1;
+    [ a, &amp;b, c=myC ](int aNum) { return a + b + myC + aNum; }
+}
+                        </code></pre>
+                    </section>
+                    <section>
+                        <p>lambda in c++ </p>
+                         <pre><code class="c++" data-trim contenteditable>
+                        [ capture_list ] (int aNum) { return aNum+1; }
+                        </code></pre>
+                        <p>That's it, time to go back to problems.</p>
+                        <br>
+                        <!--<a href="#/2">
+                            <img width="89" height="119" data-src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Up arrow" style="transform: rotate(180deg); -webkit-transform: rotate(180deg);">
+                        </a>-->
+                    </section>
+                </section>
+                <!-- end -->
+                <section>
+                    <h2>Problems</h2>
+                    <p>
+                        let's start.. 
+                    </p>
+                </section>
+                <section>
+                    <h3>Problem 1</h3>
+                    <p align = "left">A list of widgets </p>
+                        <pre><code class="C++" data-trim contenteditable>
+                            Vector&lt;Widgets*&gt; widgetList;
+                        </code></pre>
+
+                    <p align = "left">Passed to us by some Api e.g. could contain a selected widgets by user or a list of assets loaded in premo</p>
+                    <p align = "left">And this Widget contains some attributes that we are interested and we want to filter them out</p>
+                </section>
+                <section>
+                    <h3>Problem 1_a</h3>
+                    <p align = "left"> Find that list should not contain a un-selected widget (a test case may be)</p>
+                </section>
+                <section>
+                    <h3>Solution 1_a</h3>
+                    <p align = "left"> Use std::find_if_not <br> (return the item where the predicate return false)</p>
+                    <pre><code class="c++" >
+auto resultIter = std::find_if_not(widgets.cbegin(), 
+                  widgets.cend(), 
+                  [ ](Widgets *wid) { return wid->selected(); });
+
+assert(resultIter == widgets.end());
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Problem 1_b</h3>
+                    <p align = "left"> Count the number of selected widgets in the list </p>
+                </section>
+                <section>
+                    <h3>Solution 1_b</h3>
+                    <p align = "left"> Use std::count_if</p>
+                    <pre><code class="c++" data-trim contenteditable>
+auto selCount = std::count_if( widgets.begin(), 
+                widgets.end(), 
+                [ ](Widgets *wid) { return wid->selected(); });
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Problem 1_c</h3>
+                    <p align = "left"> Given the list of widgets create a new list from the original list based on given predicate
+                    <br> e.g. create a list of widgets from the given list if visible only</p>
+                </section>
+                <section>
+                    <h3>Solution 1_c</h3>
+                    <p align = "left"> Use std::copy_if</p>
+                    <pre><code class="c++" data-trim contenteditable>
+Vector&lt;Widgets*&gt; srcList;
+//make sure dstList is atleast the size of srcList
+Vector&lt;Widgets*&gt; dstList(srcList.size()); 
+auto it = std::copy_if (srcList.cbegin(), srcList.cend(), 
+          dstList.begin(),
+          [ ](Widgets *wid) { return  wid->isVisible(); });
+std::resize(std::distance(dstList.begin(), it);
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h3>Problem 1_d</h3>
+                    <p align = "left"> Given a list of widget you want to sum or accumulate some numeric property
+<br>e.g. construct a bounding rectangle from all the widgets in the list</p>
+                </section>
+                <section>
+                    <h3>Solution 1_d</h3>
+                    <p align = "left"> Use std::accumulate</p>
+                    <p align = "left"> a simple ex: use default +operator</p>
+                    <pre><code class="c++" data-trim contenteditable>
+std::vector&lt;int&gt; int_list {1,2,3,4,5,6,7,8,9,10};
+auto sum = std::accumulate(int_list.begin(), 
+           int_list.end(), 
+           0 /*init value*/);
+
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Solution 1_d ..</h3>
+                    <p align = "left"> use provided operator</p>
+                    <pre><code class="c++" data-trim contenteditable>
+std::vector&lt;Widget *wid&gt; widgets;
+Rect boundingRect = std::accumulate(widgets.begin(), 
+                    widgets.end(), 
+                    Rect(),
+                    [ ] (Rect a, Rect b) { return a |= b; });
+
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Problem 1_e</h3>
+                    <p align = "left"> Remove certain elements from list 
+                    <br>e.g. remove selected elements from given widget list  
+                    (very frequent operation e.g. user moved some selected widgets in the gui)
+                    </p>
+                </section>
+                <section>
+                    <h3>Solution 1_e</h3>
+                    <p align = "left"> Use std::remove_if (but this does not remove elements ..hmm..)</p>
+                    <pre><code class="c++" data-trim contenteditable>
+std::vector&lt;Widget*&gt; list;
+auto it = std::remove_if(list.begin(), 
+          list.end(),  
+          [ ](Widget* wid) { return wid->selected(); })
+list.erase(it, list.end());
+                    </code></pre>
+                </section>
+
+                <section>
+                     <h3>all_of, none_of, any_of</h3>
+                    <p align = "left">apply some predicate on list</p>
+                    <pre><code class="c++" data-trim contenteditable>
+std::vector&lt;Widget*&gt; list;
+auto it = std::all_of(list.begin(), 
+          list.end(),  
+          [ ](Widget* wid) { return wid->isInitialized(); });
+                    </code></pre>
+                </section>
+                
+                <section>
+                <h4>Next problem is taken from Sean Parent's talk on CPP Seasoning</h4>
+                <p>This problem comes in one form or other. <br> 
+                coincidentally when I watched this I was around the same problem with free pages in premo</p>    
+                </section>
+                
+              
+                
+                <section>
+                <canvas id="myCanvas" width="578" height="200"></canvas>
+                <script>
+                  var canvas = document.getElementById('myCanvas');
+                  var context = canvas.getContext('2d');
+                  context.canvas.width  = window.innerWidth;
+                  context.canvas.height = window.innerHeight;
+                  var x = 10; var y = 150; var width = 150; var height = 40;
+                  var numRect = 7;
+                  var i = 0;
+                  while (i < numRect) {
+                      context.beginPath();  
+                      context.rect(x, y + (i*height), width, height);
+                      context.fillStyle = 'yellow';
+                      context.fill();
+                      context.lineWidth = 3;
+                      context.strokeStyle = 'black';
+                      context.stroke();
+                      i++;
+                  }
+                  
+                </script>
+                </section>
+                <section>
+                    <canvas id="myCanvas2" width="578" height="200"></canvas>
+                    <script>
+                      var canvas = document.getElementById('myCanvas2');
+                      var context = canvas.getContext('2d');
+                      context.canvas.width  = window.innerWidth;
+                      context.canvas.height = window.innerHeight;
+                      var x = 10; var y = 150; var width = 150; var height = 40;
+                      var numRect = 7;
+                      var i = 0;
+                      while (i < numRect) {
+                          context.beginPath();
+                          context.rect(x , y + (i*height), width, height);
+                          if (i == 5 || i == 6 )
+                            context.fillStyle = 'blue';
+                          else 
+                            context.fillStyle = 'yellow';
+                          context.fill();
+                          context.lineWidth = 3;
+                          context.strokeStyle = 'black';
+                          context.stroke();
+                          i++;
+                      }
+                      //draw line
+                      context.beginPath();
+                      context.font = 'italic 35pt Calibri';
+                      context.fillStyle = 'blue'
+                      //dest
+                      var linex = x + width;
+                      var liney = y + 1*height;
+                      context.moveTo(linex, liney);
+                      context.lineTo(linex + 50, liney); 
+                      context.fillText('p', linex + 55, liney);                       
+                      //marker 1
+                      liney = y + 5*height;
+                      context.moveTo(linex, liney);
+                      context.lineTo(linex + 50, liney);
+                      context.fillText('l', linex + 55, liney);
+                      //marker 2
+                      liney = y + 7*height;
+                      context.moveTo(linex, liney);
+                      context.lineTo(linex + 50, liney);
+                      context.fillText('f', linex + 55, liney);
+                      context.strokeStyle = '#ff0000';
+                      context.stroke();
+                    </script> 
+                </section>
+                <section>
+                    <canvas id="myCanvas3" width="578" height="200"></canvas>
+                    <script>
+                      var canvas = document.getElementById('myCanvas3');
+                      var context = canvas.getContext('2d');
+                      context.canvas.width  = window.innerWidth;
+                      context.canvas.height = window.innerHeight;
+                      var x = 10; var y = 150; var width = 150; var height = 40;
+                      var numRect = 7;
+                      var i = 0;
+                      while (i < numRect) {
+                          context.beginPath();
+                          context.rect(x, y + (i*height), width, height);
+                          if (i == 1 || i == 2 )
+                            context.fillStyle = 'blue';
+                          else 
+                            context.fillStyle = 'yellow';
+                          context.fill();
+                          context.lineWidth = 3;
+                          context.strokeStyle = 'black';
+                          context.stroke();
+                          i++;
+                      }
+                       //draw line
+                      context.beginPath();
+                      context.font = 'italic 35pt Calibri';
+                      context.fillStyle = 'blue'
+                      //dest
+                      var linex = x + width;
+                      var liney = y + 1*height;
+                      context.moveTo(linex, liney);
+                      context.lineTo(linex + 50, liney); 
+                      context.fillText('p', linex + 55, liney);                       
+                      //marker 1
+                      liney = y + 5*height;
+                      context.moveTo(linex, liney);
+                      context.lineTo(linex + 50, liney);
+                      context.fillText('l', linex + 55, liney);
+                      //marker 2
+                      liney = y + 7*height;
+                      context.moveTo(linex, liney);
+                      context.lineTo(linex + 50, liney);
+                      context.fillText('f', linex + 55, liney);
+                      context.strokeStyle = '#ff0000';
+                      context.stroke();
+                    </script>
+                </section>
+               
+                <section>
+                    <h3>Use std::rotate</h3>
+                    <p>
+                        std::rotate(first, position, last) and returns a iterator to <br> first + (last - position).
+                    </p>
+                    <pre><code class="c++" data-trim contenteditable>
+std::vector&lt;Widget*&gt; list;
+auto it = std::rotate(f, l, p);
+//f = iterator to begining of the list
+//l = iterator to selected element
+//p = iterator to the destination  
+                    </code></pre>
+                </section>
+                
+                <section>
+                    <canvas id="gather1" width="578" height="200"></canvas>
+                    <script>
+                      var canvas = document.getElementById('gather1');
+                      var context = canvas.getContext('2d');
+                      context.canvas.width  = window.innerWidth;
+                      context.canvas.height = window.innerHeight;
+                      var x = 10; var y = 150; var width = 150; var height = 40;
+                      var numRect = 12;
+                      var i = 0;
+                      while (i < numRect) {
+                          context.beginPath();
+                          context.rect(x , y + (i*height), width, height);
+                          if (i == 1 || i == 3 || i == 8 || i == 10)
+                            context.fillStyle = 'blue';
+                          else 
+                            context.fillStyle = 'yellow';
+                          context.fill();
+                          context.lineWidth = 3;
+                          context.strokeStyle = 'black';
+                          context.stroke();
+                          i++;
+                      }
+                      //draw line
+                      context.beginPath();
+                      context.font = 'italic 35pt Calibri';
+                      context.fillStyle = 'blue'
+                      //dest
+                      var linex = x + width;
+                      var liney = y + 6*height;
+                      context.moveTo(linex, liney);
+                      context.lineTo(linex + 50, liney); 
+                      context.fillText('p', linex + 55, liney);                       
+                      
+                      context.strokeStyle = '#ff0000';
+                      context.stroke();
+                    </script> 
+                </section>
+                <section>
+                    <canvas id="gather2"></canvas>
+                    <script>
+                      var canvas = document.getElementById('gather2');
+                      var context = canvas.getContext('2d');
+                      context.canvas.width  = window.innerWidth;
+                      context.canvas.height = window.innerHeight;
+                      var x = 10; var y = 150; var width = 150; var height = 40;
+                      var numRect = 12;
+                      var i = 0;
+                      while (i < numRect) {
+                          context.beginPath();
+                          context.rect(x , y + (i*height), width, height);
+                          if (i == 1 || i == 3 || i == 8 || i == 10)
+                            context.fillStyle = 'blue';
+                          else 
+                            context.fillStyle = 'yellow';
+                          context.fill();
+                          context.lineWidth = 3;
+                          context.strokeStyle = 'black';
+                          context.stroke();
+                          i++;
+                      }
+                      //draw line
+                      context.beginPath();
+                      context.font = 'italic 35pt Calibri';
+                      context.fillStyle = 'blue'
+                      //dest
+                      var linex = x + width;
+                      var liney = y + 6*height;
+                      context.moveTo(linex, liney);
+                      context.lineTo(linex + 50, liney); 
+                      context.fillText('p', linex + 55, liney);                       
+                      
+                      context.strokeStyle = '#ff0000';
+                      context.stroke();
+                    </script> 
+                </section>
+                <section>
+                    <canvas id="gather3"></canvas>
+                    <script>
+                      var canvas = document.getElementById('gather3');
+                      var context = canvas.getContext('2d');
+                      context.canvas.width  = window.innerWidth;
+                      context.canvas.height = window.innerHeight;
+                      var x = 10; var y = 150; var width = 150; var height = 40;
+                      var numRect = 12;
+                      for (i = 0; i < 12; ++i) {
+                          context.beginPath();
+                          if (i < 6 ){
+                            continue;
+                          }
+                          context.rect(x , y + (i*height), width, height);
+
+                          if (i == 1 || i == 3 || i == 8 || i == 10)
+                            context.fillStyle = 'blue';
+                          else 
+                            context.fillStyle = 'yellow';
+                          context.fill();
+                          context.lineWidth = 3;
+                          context.strokeStyle = 'black';
+                          context.stroke();
+                      }
+                      //draw line
+                      context.beginPath();
+                      context.font = 'italic 35pt Calibri';
+                      context.fillStyle = 'blue'
+                      //dest
+                      var linex = x + width;
+                      var liney = y + 6*height;
+                      context.moveTo(linex, liney);
+                      context.lineTo(linex + 50, liney); 
+                      context.fillText('p', linex + 55, liney);                       
+                      
+                      context.strokeStyle = '#ff0000';
+                      context.stroke();
+                    </script> 
+                </section>
+                <section>
+                    <h5>Use std::stable_partition</h5>
+                    <pre><code class="c++" data-trim contenteditable>
+std::vector&lt;Widget*&gt; list;
+auto it = std::stable_partition(p, l, 
+        [] (Widgets* wid) { return wid->isSelected();});
+//p = iterator to begining of the list
+//l = iterator to selected element  
+                    </code></pre>
+                </section>
+
+                <section>
+                    <canvas id="gather4"></canvas>
+                    <script>
+
+                      var canvas = document.getElementById('gather4');
+                      var context = canvas.getContext('2d');
+                      context.canvas.width  = window.innerWidth;
+                      context.canvas.height = window.innerHeight;
+                      var x = 10; var y = 150; var width = 150; var height = 40;
+                      var numRect = 12;
+                      for (i = 0; i < 12; ++i) {
+                          context.beginPath();
+                          if (i < 6 ){
+                            continue;
+                          }
+                          context.rect(x , y + (i*height), width, height);
+
+                          if (i == 6 || i == 7)
+                            context.fillStyle = 'blue';
+                          else 
+                            context.fillStyle = 'yellow';
+                          context.fill();
+                          context.lineWidth = 3;
+                          context.strokeStyle = 'black';
+                          context.stroke();
+                      }
+                      //draw line
+                      context.beginPath();
+                      context.font = 'italic 35pt Calibri';
+                      context.fillStyle = 'blue'
+                      //dest
+                      var linex = x + width;
+                      var liney = y + 6*height;
+                      context.moveTo(linex, liney);
+                      context.lineTo(linex + 50, liney); 
+                      context.fillText('p', linex + 55, liney);                       
+                      
+                      //last marker
+                      liney = y + 12*height;
+                      context.moveTo(linex, liney);
+                      context.lineTo(linex + 50, liney);
+                      context.fillText('l', linex + 55, liney);
+                      context.strokeStyle = '#ff0000';
+                      context.stroke();
+                    </script> 
+                </section>
+
+                <section>
+                    <h5>Use gather</h5>
+                    <p>is present in boost lib</p>
+                    <pre><code class="c++" data-trim contenteditable>
+template &lt;typename I, // I models BidirectionalIterator
+           typename S&gt; // S models UnaryPredicate
+auto gather(I f, I l, I p, S s) -&gt; std::pair&lt;I, I&gt;
+{
+     using value_type = typename std::iterator_traits&lt;I&gt;::value_type;
+     auto itFirst = std::stable_partition(f, p, 
+                    [&amp;](const value_type&amp; x){ return !s(x); });
+     auto itSecond = std::stable_partition(p, l, s);
+     return std::make_pair(itFirst, itSecond);
+     
+}
+                    </code></pre>
+                </section>
+                
+                <section>
+                    <h5>example</h5>
+                    <pre><code class="c++" data-trim contenteditable>
+std::vector&lt;int&gt; list{1,2,4,5,0,6,9,0,0,11,0};
+
+auto isZero = [](int a) { return a == 0;};
+
+gather(list.begin(), list.end(), std::next(it,3), isZero);
+                    </code></pre>
+                    <pre><code class="c++" data-trim contenteditable>
+//output
+1 2 4 0 0 0 0 5 6 9 11
+                    </code></pre>
+                </section>
+                
+                <section>
+                    <h5>Alternatives to raw loops</h5>
+                    <ul>
+                        <li>Use an existing algorithm</li>
+                        <ul>
+                        <li>prefer standard library if available</li>
+                        </ul>
+                        
+                        <li>Implement known algorithm as a function</li>
+                    </ul>
+                </section>
+
+                <!--<section>
+                    <h2>Fantastic Ordered List</h2>
+                    <ol>
+                        <li>One is smaller than...</li>
+                        <li>Two is smaller than...</li>
+                        <li>Three!</li>
+                    </ol>
+                </section>
+
+                <section>
+                    <h2>Tabular Tables</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Value</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Apples</td>
+                                <td>$1</td>
+                                <td>7</td>
+                            </tr>
+                            <tr>
+                                <td>Lemonade</td>
+                                <td>$2</td>
+                                <td>18</td>
+                            </tr>
+                            <tr>
+                                <td>Bread</td>
+                                <td>$3</td>
+                                <td>2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>-->
+
+                
+                <section style="text-align: left;">
+                    <h1>THE END</h1>
+                    
+                </section>
+
+            </div>
+
+        </div>
+
+        <script src="lib/js/head.min.js"></script>
+        <script src="js/reveal.js"></script>
+
+        <script>
+
+            // Full list of configuration options available at:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+
+                transition: 'none', // none/fade/slide/convex/concave/zoom
+
+                // Optional reveal.js plugins
+                dependencies: [
+                    { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'plugin/zoom-js/zoom.js', async: true },
+                    { src: 'plugin/notes/notes.js', async: true }
+                ]
+            });
+
+        </script>
+
+    </body>
+</html>
